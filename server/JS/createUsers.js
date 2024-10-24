@@ -1,7 +1,10 @@
 import { faker } from 'https://cdn.jsdelivr.net/npm/@faker-js/faker@9.0.3/dist/index.min.js';
+import { v4 as uuidv4 } from 'https://cdn.jsdelivr.net/npm/uuid@10.0.0/dist/esm-browser/index.js';
 
-        function add() {
+
+        export function add() {
             console.log('add function called');
+            const id = uuidv4();
             const fakeName = faker.person.fullName();
             const fakeEmail = faker.internet.email();
             const username = faker.internet.userName();
@@ -16,8 +19,10 @@ import { faker } from 'https://cdn.jsdelivr.net/npm/@faker-js/faker@9.0.3/dist/i
             const companyName = faker.company.name();
             const dob = faker.date.past({ years: 50, refDate: new Date(2020, 0, 1) });
 
-           superagent.post('http://localhost:3000/new_user')
-        .send({
+           superagent.post('http://204.48.18.221:3001/accounts')
+        .send(
+            {
+            id: id,
             name: fakeName,
             email: fakeEmail,
             username: username,
@@ -50,4 +55,4 @@ import { faker } from 'https://cdn.jsdelivr.net/npm/@faker-js/faker@9.0.3/dist/i
         }
 
         
-        window.add = add;
+       

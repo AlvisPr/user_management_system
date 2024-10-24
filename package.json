@@ -2,6 +2,7 @@
   "name": "adduser",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,5 +14,8 @@
     "express": "^4.21.0",
     "lowdb": "1.0",
     "superagent": "^10.1.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^9.0.3"
   }
 }

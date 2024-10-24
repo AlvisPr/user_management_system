@@ -14,17 +14,6 @@
         <button type="button" class="btn btn-primary" style="font-size: 1.5em;" onclick="add()">Add User</button>
         <div id="status" style="margin-top: 20px;"></div>
     </div>
-    <script>
-        fetch('/navbar')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('navbar-placeholder').innerHTML = data;
-            })
-            .catch(error => {
-                console.error('Error fetching navbar:', error);
-                document.getElementById('navbar-placeholder').innerHTML = '<p>Error loading navbar</p>';
-            });
-    </script>
-    <script type="module" src="./JS/addData.js"></script>
+  <script type="module" src="/addusersjs"></script>
 </body>
 </html>
