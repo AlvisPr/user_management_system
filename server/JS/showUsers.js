@@ -1,49 +1,67 @@
+console.log("showUswers loaded");   
 
 
-superagent.get('http://204.48.18.221:3001/accounts')
-    .then(response => {
-        const users = response.body;
-        const container = document.querySelector('#user-cards'); // Make sure container is available here
-        users.forEach(user => {
-            console.log(user);
-            const div = document.createElement('div');
-            div.className = 'col-md-4 mb-4';
-            div.innerHTML = `
-                <div class="card">
-                    <div class="card-body">
-                        <img src="${user.avatar}" class="card-img-top" alt="...">
-                        <h5 class="card-title">${user.name}</h5>
-                        <p class="card-text">${user.email}</p>
-                        <button class="delete-btn" data-id="${user.id}">Delete User</button>
-                    </div>
-                </div>
-            `;
-            container.appendChild(div);
-        });
-    })
-    .catch(error => console.error('Error fetching users:', error));
-
-
+// Load navbar content
 fetch('/navbar')
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById('navbar-placeholder').innerHTML = data;
-    })
-    .catch(error => console.error('Error loading navbar:', error));
-
-
-    
-
-document.addEventListener('click', function(event) {
-    if (event.target.classList.contains('delete-btn')) {
-        const userId = event.target.getAttribute('data-id');
-        console.log('Delete user:', userId);
-        superagent.delete(`http://204.48.18.221:3001/accounts/${userId}`)
-            .then(() => {
-                event.target.closest('.col-md-4').remove();
-            })
-            .catch(error => {
-                console.error('Error deleting user:', error);
-            });
-    }
+.then(response => response.text())
+.then(data => {
+    document.getElementById('navbar-placeholder').innerHTML = data;
+})
+.catch(error => {
+    console.error('Error fetching navbar:', error);
+    document.getElementById('navbar-placeholder').innerHTML = '<p>Error loading navbar</p>';
 });
+
+// Load and display user accounts
+fetch('/accounts')
+.then(response => response.json())
+.then(users => {
+    const userCards = document.getElementById('user-cards');
+    users.forEach(user => {
+        const card = document.createElement('div');
+        card.className = 'col-md-4';
+        card.innerHTML = `
+            <div class="card mb-4" id="user-card-${user.id}">
+                <div class="card-body">
+                    <h5 class="card-title">${user.name}</h5>
+                    <img src="${user.avatar}" class="card-img-top" alt="User avatar">
+                    <p class="card-text"> <b>Email:</b> ${user.email}</p>
+                    <button class="btn btn-primary" onclick="deleteUser(${user.id})">Delete</button>
+                </div>
+            </div>
+        `;
+        userCards.appendChild(card);
+    });
+})
+.catch(error => {
+    console.error('Error fetching users:', error);
+});
+
+
+window.deleteUser = function(userId) {
+    fetch(`/accounts/${userId}`, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const userCard = document.getElementById(`user-card-${userId}`);
+        if (userCard) {
+            userCard.remove();
+        }
+        if (!data.success) {
+            console.error('Error deleting user:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error deleting user:', error);
+        const userCard = document.getElementById(`user-card-${userId}`);
+        if (userCard) {
+            userCard.remove();
+        }
+    });
+};
