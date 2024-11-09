@@ -4,46 +4,67 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import low from 'lowdb';
 import FileSync from 'lowdb/adapters/FileSync.js';
+import { faker } from '@faker-js/faker';
+import { v4 as uuidv4 } from 'uuid';
 
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+// Improved absolute path resolution
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const rootDir = path.join(__dirname, '..');
 
-const adapter = new FileSync(path.join(__dirname, 'database', 'db.json'));
+// Database setup with absolute path
+const dbPath = path.join(__dirname, 'database', 'db.json');
+const adapter = new FileSync(dbPath);
 const db = low(adapter);
 
 db.defaults({ accounts: [] }).write();
 
-const app = express();
-const PORT = 3001;
-
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '../public')));
 
+// Single static file middleware with absolute path
+app.use(express.static(path.join(rootDir, 'public')));
+
+// Function to convert UUID to a number
+function uuidToNumber(uuid) {
+    let hash = 0;
+    for (let i = 0; i < uuid.length; i++) {
+        const char = uuid.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash |= 0; 
+    }
+    return Math.abs(hash);
+}
+
+// Updated route handlers with absolute paths
+app.get('/', (req, res) => {
+    res.sendFile(path.join(rootDir, 'public/Pages/addUser.html'));
+});
+
+app.get('/navbar', (req, res) => {
+    res.sendFile(path.join(rootDir, 'public/Pages/navbar.html'));
+});
+
+app.get('/adduser', (req, res) => {
+    res.sendFile(path.join(rootDir, 'public/Pages/addUser.html'));
+});
+
+app.get('/show_users', (req, res) => {
+    res.sendFile(path.join(rootDir, 'public/Pages/showUsers.html'));
+});
+
+// JS files route with absolute path
 app.get('/js/:filename', (req, res) => {
     const options = {
         root: path.join(__dirname, 'JS'),
         dotfiles: 'deny',
     };
-
-    res.sendFile(req.params.filename, options, (err) => {
-        if (err) {
-            res.status(404).send({ message: 'File not found' });
-        }
-    });
+    res.sendFile(req.params.filename, options);
 });
 
-const serveHtml = (route, filePath) => {
-    app.get(route, (req, res) => {
-        res.sendFile(path.join(__dirname, filePath));
-    });
-};
-
-serveHtml('/', '../public/Pages/addUser.html');
-serveHtml('/navbar', '../public/Pages/navbar.html');
-serveHtml('/adduser', '../public/Pages/addUser.html');
-serveHtml('/show_users', '../public/Pages/showUsers.html');
-serveHtml('/fetch-addData', 'JS/addusers.js');
-
+// API routes
 app.get('/accounts', (req, res) => {
     const data = db.get('accounts').value();
     res.status(200).send(data);
@@ -71,6 +92,45 @@ app.delete('/accounts/:id', (req, res) => {
 
     db.get('accounts').remove({ id: userId }).write();
     res.status(200).send({ message: 'Account deleted successfully' });
+});
+
+// New endpoint to create a fake user
+app.post('/create-fake-user', (req, res) => {
+    const uuid = uuidv4();
+    const id = uuidToNumber(uuid);
+    const fakeName = faker.person.fullName();
+    const fakeEmail = faker.internet.email();
+    const username = faker.internet.userName();
+    const password = faker.internet.password();
+    const phone = faker.phone.number();
+    const streetAddress = faker.location.streetAddress();
+    const cityStateZip = `${faker.location.city()}, ${faker.location.state()} ${faker.location.zipCode()}`;
+    const latitude = faker.location.latitude();
+    const longitude = faker.location.longitude();
+    const avatar = faker.image.avatar();
+    const jobTitle = faker.person.jobTitle();
+    const companyName = faker.company.name();
+    const dob = faker.date.past({ years: 50, refDate: new Date(2020, 0, 1) });
+
+    const newUser = {
+        id: id,
+        name: fakeName,
+        email: fakeEmail,
+        username: username,
+        password: password,
+        phone: phone,
+        streetAddress: streetAddress,
+        cityStateZip: cityStateZip,
+        latitude: latitude,
+        longitude: longitude,
+        avatar: avatar,
+        jobTitle: jobTitle,
+        companyName: companyName,
+        dob: dob
+    };
+
+    db.get('accounts').push(newUser).write();
+    res.status(200).send({ success: true, user: newUser });
 });
 
 app.listen(PORT, () => {
