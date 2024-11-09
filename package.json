@@ -4,7 +4,8 @@
   "main": "server/index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node server/index.js",
+    "obfuscate": "javascript-obfuscator src --output dist"
   },
   "author": "",
   "license": "ISC",
@@ -17,14 +18,7 @@
     "uuid": "^11.0.2"
   },
   "devDependencies": {
-    "@faker-js/faker": "^9.2.0"
-  },
-  "bin": "server/index.js",
-  "pkg": {
-    "scripts": [
-      "server/**/*.js",
-      "server/**/*.json",
-      "server/public/pages/*.html"
-    ]
+    "@faker-js/faker": "^9.2.0",
+    "javascript-obfuscator": "^4.1.1"
   }
 }
