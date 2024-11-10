@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node server/index.js",
-    "obfuscate": "javascript-obfuscator src --output dist"
+    "obfuscate": "javascript-obfuscator public/JS/createUsers.js --output dist/createUsers.js && javascript-obfuscator public/JS/showUsers.js --output dist/showUsers.js &&   javascript-obfuscator public/JS/navbar.js --output dist/navbar.js " 
   },
   "author": "",
   "license": "ISC",

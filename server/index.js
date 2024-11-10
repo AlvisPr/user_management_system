@@ -56,10 +56,9 @@ app.get('/show_users', (req, res) => {
 });
 
 // JS files route with absolute path
-app.get('/js/:filename', (req, res) => {
+app.get('/dist/:filename', (req, res) => {
     const options = {
-        root: path.join(__dirname, 'JS'),
-        dotfiles: 'deny',
+        root: path.join(rootDir, 'dist'),
     };
     res.sendFile(req.params.filename, options);
 });
