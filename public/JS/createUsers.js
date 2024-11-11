@@ -1,15 +1,7 @@
-
 export function add() {
     console.log('add function called');
     
-    document.getElementById('status').innerHTML = `
-        <div class="d-flex align-items-center col-md-6">
-            <div class="spinner-border text-primary me-2" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <span>Creating user...</span>
-        </div>
-    `;
+    document.getElementById('status').innerHTML = '';  // Clear any existing content
 
     fetch('/create-fake-user', {
         method: 'POST',
@@ -44,7 +36,6 @@ export function add() {
                 <small class="text-muted">Error details: ${error.message}</small>
             </div>
         `;
-    });
+    }); 
 }
-
-window.add = add;window.add = add;
+window.add = add;
