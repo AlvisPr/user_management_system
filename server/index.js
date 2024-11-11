@@ -26,6 +26,7 @@ app.use(bodyParser.json());
 
 // Single static file middleware with absolute path
 app.use(express.static(path.join(rootDir, 'public')));
+app.use(express.static(path.join(rootDir, 'dist')));
 
 // Function to convert UUID to a number
 function uuidToNumber(uuid) {
