@@ -2,7 +2,7 @@
 
 
 // Load and display user accounts
-fetch('http://localhost:3001/accounts')
+fetch('/accounts')
 .then(response => response.json())
 .then(users => {
     const userCards = document.getElementById('user-cards');
@@ -37,7 +37,7 @@ fetch('http://localhost:3001/accounts')
 });
 
 window.deleteUser = function(userId) {
-    fetch(`http://localhost:3001/accounts/${userId}`, {
+    fetch(`/accounts/${userId}`, {
         method: 'DELETE'
     })
     .then(response => {
